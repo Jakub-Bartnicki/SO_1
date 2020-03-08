@@ -21,7 +21,7 @@
 
 int main (int argc, char *argv[])
 {
-	char *copy, *source, *goal, *pom;
+	char *copy, *source, *goal;
 	int size;
 	FILE *file1, *file2;
 	copy = (char*) malloc (100 * sizeof (char));
@@ -55,6 +55,9 @@ int main (int argc, char *argv[])
 
 	fclose(file1);
 	fclose(file2);
+	free (copy);
+	free (source);
+	free (goal);
 
 	return 0;
 }
