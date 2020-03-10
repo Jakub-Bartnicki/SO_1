@@ -5,7 +5,7 @@
 int main (int argc, char *argv[])
 {
 	char copy[100], source[100], goal[100];
-	int size;
+	int size, size_h;
 	FILE *file1, *file2;
 
 	printf ("Kopiuj, zrodlo, cel, rozmiar\n");
@@ -28,15 +28,12 @@ int main (int argc, char *argv[])
 	{
 		fread((void *) buf, size, 1, file1);
 		//buf[size-1] = '\0';
-		printf("%s", buf);
+		printf("%d", size_h);
 		fwrite((void *) buf, size, 1, file2);
 	}
 
 	fclose(file1);
 	fclose(file2);
-	free (copy);
-	free (source);
-	free (goal);
 
 	return 0;
 }
