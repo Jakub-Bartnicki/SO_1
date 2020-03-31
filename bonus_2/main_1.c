@@ -5,7 +5,7 @@
 #include <errno.h>
 #define test_errno(msg) do{if (errno) {perror(msg); exit(EXIT_FAILURE);}} while(0)
 int licznik=0;
-(void* _arg, int numer)
+void* napis (int numer)
 {
 	int pom=0, k, j;
 	k = rand () % 10001;
