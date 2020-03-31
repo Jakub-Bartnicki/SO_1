@@ -14,6 +14,7 @@ void* napis (int numer)
 		printf ("Wątek %d iteracja %d\n", numer+1, j);
 		licznik++;
 	}
+	return NULL;
 }
 int main (void)
 {
