@@ -1,0 +1,7 @@
+Jak wytłumaczyć zmianę zachowania programu?
+    - Są dwa wątki, działające równolegle i korzystające z tych samych zasobów. Co jest w programie, to pierwszy wątek uzyskuje dostęp do licznika by go wypisać, a jednocześnie drugi chce go zmienić, ale nie może. Próba zmiany wartości kończy się fiaskiem a drugi dalej wypisuje zero. Jest taka sama liczba operacji wykonywanych na każdym z wątków. Operacji elementarnych. Jednostkowych. Atomowych.
+    Pierwszy: Odczytaj wartość i wypisz wartość
+    Drugi: Zinkrementuj i nadpisz
+
+Jak temu zaradzić?
+    - Wykorzystanie mutex (wzajemne wykluczanie) pozwala nam enkapsulować bloki kodu, które powinny być wykonywane tylko w jednym wątku na raz. To znaczy, możemy chwilowo wstrzymać pracę jednego wątku na rzecz zwolnienia pamięci dla pozostałych wątków.

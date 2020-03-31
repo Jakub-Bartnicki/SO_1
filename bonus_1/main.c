@@ -5,16 +5,20 @@
 #define test_errno(msg) do{if (errno) {perror(msg); exit(EXIT_FAILURE);}} while(0)
 
 int counter = 0;
+pthread_mutex_t accum_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void* thread1(void* _arg){
     while(1){
+        pthread_mutex_lock(&accum_mutex);
         counter++;
+        pthread_mutex_unlock(&accum_mutex);
     }
 
     return NULL;
 }
 
 void* thread2(void* _arg){
+    int x = 0;
     while(1){
         printf("%d\n", counter);
     }
