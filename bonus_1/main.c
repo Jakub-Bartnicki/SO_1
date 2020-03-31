@@ -31,11 +31,10 @@ int main()
     errno = pthread_create(&th2, NULL, thread2, NULL);
     test_errno("Failed pthread_create");
 
-    
-
     errno = pthread_join(th1, NULL);
     test_errno("pthread_join");
     errno = pthread_join(th2, NULL);
     test_errno("pthread_join");
+    
     return 0;
 }
