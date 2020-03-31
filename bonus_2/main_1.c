@@ -23,13 +23,13 @@ int main (void)
 	pthread_t watki[10];
 	for (i=0; i<10; i++)
 	{
-		errno =  pthread_create(&watki[i], NULL, napis(i), NULL)
-		test_errno ("Failed pthread_create");
+		errno =  pthread_create(&watki[i], NULL, napis(i), NULL);
+		test_errno("Failed pthread_create");
 	}
 	for (i=0; i<10; i++)
 	{
 		errno = pthread_join (watki[i], NULL);
-		test_errno ("pthread_join");
+		test_errno("pthread_join");
 	
 	}
 	printf ("Liczba wszystkich iteracji wywolanej przez wszysktie wątki: %d\n", licznik);
