@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
-
+#include <errno.h>
 int licznik=0;
 void* Napis (int numer)
 {
@@ -10,7 +10,7 @@ void* Napis (int numer)
 	k = rand () % 10001;
 	for (j=0; j<k; j++)
 	{
-		printf ("Watek %d iteracja %d\n", numer, j);
+		printf ("Wątek %d iteracja %d\n", numer+1, j);
 		licznik++;
 	}
 }
@@ -21,8 +21,8 @@ int main (void)
 	pthread_t watki[10];
 	for (i=0; i<10; i++)
 	{
-		errno = pthread_create(&watki[i], NULL, Napis, NULL)
-		errno = pthread_join (watki[i], NULL);
+		pthread_create(&watki[i], NULL, Napis(i), NULL)
+		pthread_join (watki[i], NULL);
 	}
 	printf ("Liczba wszystkich iteracji wywolanej przez wszysktie wątki: %d\n", licznik);
 	return 0;
