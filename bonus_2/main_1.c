@@ -1,36 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <pthread.h>
-#include <errno.h>
-#define test_errno(msg) do{if (errno) {perror(msg); exit(EXIT_FAILURE);}} while(0)
+#include <unistd.h>
+#include <assert.h>
 int licznik=0;
-void* napis (int numer)
+void* napis (void *arguments)
 {
-	int pom=0, k, j;
-	k = rand () % 10001;
+  	int index = *((int *)arguments);
+	int k = rand () % 10001;
+	int j;
 	for (j=0; j<k; j++)
 	{
-		printf ("Wątek %d iteracja %d\n", numer+1, j);
+		printf ("Wątek %d iteracja %d\n", index, j);
 		licznik++;
 	}
-	return NULL;
 }
 int main (void)
 {
 	srand((unsigned int)time(NULL));
-	int i;
 	pthread_t watki[10];
+	int watki_args[10];
+	int i;
+	int result_code;
 	for (i=0; i<10; i++)
 	{
-		errno =  pthread_create(&watki[i], NULL, napis(i), NULL);
-		test_errno("Failed pthread_create");
+		watki_args[i] = i;
+		result_code = pthread_create (&watki[i], NULL, napis, &watki_args[i]);
+		assert(!result_code);
 	}
 	for (i=0; i<10; i++)
 	{
-		errno = pthread_join (watki[i], NULL);
-		test_errno("pthread_join");
-	
+		result_code = pthread_join (watki[i], NULL);
+		assert (!result_code);
 	}
 	printf ("Liczba wszystkich iteracji wywolanej przez wszysktie wątki: %d\n", licznik);
 	return 0;
