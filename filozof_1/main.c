@@ -1,65 +1,90 @@
-#include <stdio.h> 
 #include <pthread.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdarg.h>
+ 
+#define N 5
+const char* philosophers[N] = { "Person A", "Person B", "Person C", "Person D", "Person E"};
+pthread_mutex_t forks[N];
 
-#define NO_OF_PHILOSOPHERS 5
+#define lock pthread_mutex_lock
+#define unlock pthread_mutex_unlock
+#define xy(x, y) printf("\033[%d;%dH", x, y)
+#define clear_eol(x) print(x, 12, "\033[K")
 
-pthread_t philosophers[NO_OF_PHILOSOPHERS];
-pthread_mutex_t mutex_forks = PTHREAD_MUTEX_INITIALIZER;; 
-int forks[NO_OF_PHILOSOPHERS];
-
-void init()
+void print(int y, int x, const char *fmt, ...)
 {
-    int i;
-    for(i=0; i<NO_OF_PHILOSOPHERS; i++)
-        forks[i] = 0;
+	static pthread_mutex_t screen = PTHREAD_MUTEX_INITIALIZER;
+	va_list ap;
+	va_start(ap, fmt);
+ 
+	lock(&screen);
+	xy(y + 1, x), vprintf(fmt, ap);
+	xy(N + 1, 1), fflush(stdout);
+	unlock(&screen);
 }
-
-void philosopher(int i)
+ 
+void eat(int id)
 {
-    int right = i;
-    int left = (i - 1 == -1) ? NO_OF_PHILOSOPHERS - 1 : (i - 1);
-        int locked;
-    while(1)
-    {
-            locked = 0;
-            while(!locked)
-            {
-                pthread_mutex_lock(&mutex_forks);
-                if(forks[right] || forks[left])
-                {
-                    pthread_mutex_unlock(&mutex_forks);     // give up the forks unless you can take both at once.
-                    printf("Philosopher %d cannot take forks. Giving up and thinking.\n",i); 
-                    usleep(random() % 1000); // think. 
-                    continue;
-                }
-                forks[right] = 1; // take forks.
-                forks[left] = 1;
+	int f[2], ration, i; /* forks */
+	f[0] = f[1] = id;
 
-                pthread_mutex_unlock(&mutex_forks);
-                locked = 1; 
-            }
-
-        printf("Philosopher %d took both forks. Now eating :)\n",i);
-        usleep(random() % 500);
-        printf("Philosopher %d done with eating. Giving up forks.\n",i);
-        pthread_mutex_lock(&mutex_forks); // give up forks. 
-        forks[right] = 0;
-        forks[left] = 0;
-        pthread_mutex_unlock(&mutex_forks);
-        usleep(random() % 1000);
-    }
-
+	f[id & 1] = (id + 1) % N;
+ 
+	clear_eol(id);
+	print(id, 12, "..oO (forks, need forks)");
+ 
+	for (i = 0; i < 2; i++) {
+		lock(forks + f[i]);
+		if (!i) clear_eol(id);
+ 
+		print(id, 12 + (f[i] != id) * 6, "fork%d", f[i]);
+		/* delay 1 sec to clearly show the order of fork acquisition */
+		sleep(1);
+	}
+ 
+	for (i = 0, ration = 3 + rand() % 8; i < ration; i++)
+		print(id, 24 + i * 4, "nom"), sleep(1);
+ 
+	/* done nomming, give up forks */
+	for (i = 0; i < 2; i++) unlock(forks + f[i]);
 }
-
+ 
+void think(int id)
+{
+	int i, t;
+	char buf[64] = {0};
+ 
+	do {
+		clear_eol(id);
+		sprintf(buf, "..oO (%s)", "eating..");
+ 
+		for (i = 0; buf[i]; i++) {
+			print(id, i+12, "%c", buf[i]);
+			if (i < 5) usleep(200000);
+		}
+		usleep(500000 + rand() % 1000000);
+	} while (t);
+}
+ 
+void* philosophize(void *a)
+{
+	int id = *(int*)a;
+	print(id, 1, "%s", philosophers[id]);
+	while(1) think(id), eat(id);
+}
+ 
 int main()
 {
-    init();
-    int i;
-    for(i=0; i<NO_OF_PHILOSOPHERS; i++)
-        pthread_create( &philosophers[i], NULL, philosopher, (void*)i);
-    for(i=0; i<NO_OF_PHILOSOPHERS; i++)
-        pthread_join(philosophers[i],NULL);
-    return 0;
-} 
+	int i, id[N];
+	pthread_t t_id[N];
+ 
+	for (i = 0; i < N; i++)
+		pthread_mutex_init(forks + (id[i] = i), 0);
+ 
+	for (i = 0; i < N; i++)
+		pthread_create(t_id + i, 0, philosophize, id + i);
+ 
+	return pthread_join(t_id[0], 0);
+}
