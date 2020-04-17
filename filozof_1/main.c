@@ -43,7 +43,7 @@ void eat(int id)
 		/* delay 1 sec to clearly show the order of fork acquisition */
 		sleep(1);
 	}
- 
+
 	for (i = 0, ration = 3 + rand() % 8; i < ration; i++)
 		print(id, 24 + i * 4, "nom"), sleep(1);
  
@@ -58,7 +58,7 @@ void think(int id)
  
 	do {
 		clear_eol(id);
-		sprintf(buf, "..oO (%s)", "eating..");
+		sprintf(buf, "..oO (%s)", "thinking..");
  
 		for (i = 0; buf[i]; i++) {
 			print(id, i+12, "%c", buf[i]);

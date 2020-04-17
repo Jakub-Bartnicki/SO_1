@@ -1,0 +1,8 @@
+1. Ogarnąć main()
+2. Wczytywanie char* i zamiana wiersza na nazwe programu/argumenty
+3. Uruchamianie w tle/normalnie
+4. Przekierowanie wyjścia (np do pliku.txt)
+5. Łączenie poleceń w jedno 
+6. Zapis historii poleceń
+7. Wypisanie historii poleceń
+8. 
