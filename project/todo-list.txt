@@ -1,5 +1,4 @@
 1. (J)  Ogarnąć main()
-2. (Ł)  Wczytywanie char* i zamiana wiersza na nazwe programu/argumenty
 3. (Ł)  Uruchamianie w tle/normalnie
 4. (J)  Przekierowanie wyjścia (np do pliku.txt)
 5. (K)  Łączenie poleceń w jedno 
