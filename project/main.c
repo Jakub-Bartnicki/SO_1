@@ -7,10 +7,10 @@ int checkLastSymbol(char array[]) {
     char c = '&';
 
     if (array[strlen(array) - 1]) {
-        printf("%s", "It works");
+        printf("%s", "It works\n");
         return 0;
     } else {
-        printf("%s", "Error");
+        printf("%s", "Error\n");
         return 1;
     }
 }
@@ -19,29 +19,36 @@ int main(int argc, const char* argv[]) {
 
     int i, sum = 0;
     char option[200];
+    int currChar = 0;
 
     // if (argc == 1) {
     //     printf("Please provide the command line arguments\n");
     // }
 
     while (1) {
-        getchar();
+        char readed[200];
 
-        fgets(option, 200, stdin);
-        puts(option);
-        printf("%d\n", strcmp(option, "exit"));
+        gets(readed);
 
-        if (strcmp(option, "exit")) {
+        strcpy(option, readed);
+        strtok(option, " ");
+
+        if (!(strcmp(option, "exit"))) {
             printf("%s", "exitting...\n");
             exit(0);
-        } else if (strcmp(option, "sum")) {
+        } else if (!(strcmp(option, "sum"))) {
             checkLastSymbol(option);
+            char command[202];  
+            strcpy(command, "./");
+            strcat(command, readed);
 
-            static char *argvx[]={"sum","5", "6"};
-            execv("./", argvx);
+            printf("command: %s\n", command);
+            system(command);
         } else {
-            exit(1);
+            printf("%s", "Choose another option");
         }
+
+        getchar();
     }
 
     return 0;

@@ -17,10 +17,9 @@ int main(int argc, const char* argv[]) {
         printf("%s\n", type);
 
         sum += atoi(argv[i]);
-        getchar();
     }
 
-    printf("%d\n", sum);
+    printf("Output: %d\n", sum);
     
     return 0;
 }
