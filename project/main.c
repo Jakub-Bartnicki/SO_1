@@ -44,6 +44,10 @@ int main(int argc, const char* argv[]) {
 
             printf("command: %s\n", command);
             system(command);
+        } else if (!(strcmp(option, "history"))) {
+
+        } else if (!(strcmp(option, "help"))) {
+
         } else {
             printf("%s", "Choose another option");
         }

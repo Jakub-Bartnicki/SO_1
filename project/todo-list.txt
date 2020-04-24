@@ -4,3 +4,6 @@
 5. (K)  Łączenie poleceń w jedno 
 6. (K)  Zapis historii poleceń
 7. (K)  Wypisanie historii poleceń
+
+(J) ogarniac main() -> popodpinac komendy -> stworzyc help()
+(K i Ł) Tworzyć komendy 
