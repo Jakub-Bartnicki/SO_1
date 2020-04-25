@@ -28,7 +28,7 @@ int main(int argc, const char* argv[]) {
     while (1) {
         char readed[200];
 
-        fgets(readed, 200, stdin);
+        gets(readed);
 
         strcpy(option, readed);
         strtok(option, " ");
