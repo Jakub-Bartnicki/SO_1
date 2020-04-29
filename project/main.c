@@ -4,19 +4,65 @@
 #include <unistd.h>
 
 
-int checkLastSymbol(char array[]) {
+void checkLastSymbol(char array[]) {
     char c = '&';
 
     if (array[strlen(array) - 1]) {
         printf("%s", "It works\n");
-        return 0;
     } else {
         printf("%s", "Error\n");
-        return 1;
     }
 }
 
+typedef struct ListElement {
+    char data[200];
+    struct ListElement * next;
+
+} ListElement_type;
+	
+void pushBack(ListElement_type **head, char* text)
+{	
+	if(*head==NULL) {
+		*head = (ListElement_type *)malloc(sizeof(ListElement_type));
+   		strcpy((*head)->data, text);
+    	(*head)->next = NULL;
+	} else {
+		ListElement_type *current=*head;
+	
+	    while (current->next != NULL) {
+	        current = current->next;
+	    }
+	
+	    current->next = (ListElement_type *)malloc(sizeof(ListElement_type));
+	    strcpy(current->next->data, text);
+	    current->next->next = NULL;	
+	}
+}
+	
+void show(ListElement_type *head) {
+    int i = 1;
+
+    printf("\n");
+    if(head==NULL) {
+        printf("List is empty");
+        return;
+    }
+
+    ListElement_type *current=head;
+
+    do {
+        printf("%d. %s\n", i, current->data);
+        current = current->next;
+        i++;
+    } while (current != NULL);
+ 
+}
+
 int main(int argc, const char* argv[]) {
+
+    ListElement_type *head;
+    head = (ListElement_type *)malloc(sizeof(ListElement_type));
+    head=NULL;
 
     int i, sum = 0;
     char option[200];
@@ -72,6 +118,8 @@ int main(int argc, const char* argv[]) {
 
         } else if (!(strcmp(option, "history"))) {
             // TODO: Wyswietlanie historii
+            
+            show(head);
 
         } else if (!(strcmp(option, "help"))) {
             puts("\nhelp - show this help list\n"                       \
@@ -80,8 +128,10 @@ int main(int argc, const char* argv[]) {
             "exit - exit this interpreter\n");        
         } else {
             printf("%s", "Choose another option");
+            break;
         }
 
+        pushBack(&head, readed);
     }
     return 0;
 }
