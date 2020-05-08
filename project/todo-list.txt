@@ -1,9 +1,4 @@
 1. (J)  Ogarnąć main()
-3. (Ł)  Uruchamianie w tle/normalnie
-4. (J)  Przekierowanie wyjścia (np do pliku.txt)
-5. (K)  Łączenie poleceń w jedno 
-6. (K)  Zapis historii poleceń
-7. (K)  Wypisanie historii poleceń
-
-(J) ogarniac main() -> popodpinac komendy -> stworzyc help()
-(K i Ł) Tworzyć komendy 
+2. (J)  Uruchamianie w tle/normalnie
+3. (Ł)  Przekierowanie wyjścia (np do pliku.txt)
+4. (K)  Łączenie poleceń w jedno 

@@ -2,136 +2,149 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <errno.h>
+#include <stdbool.h> 
 
-
-void checkLastSymbol(char array[]) {
-    char c = '&';
-
-    if (array[strlen(array) - 1]) {
-        printf("%s", "It works\n");
-    } else {
-        printf("%s", "Error\n");
-    }
-}
+// #define test_errno(msg) do{if (errno) {perror(msg); exit(EXIT_FAILURE);}} while(0)
+#define OK       0
+#define NO_INPUT 1
+#define TOO_LONG 2
+#define SIZE_OF_INPUT 200
 
 typedef struct ListElement {
-    char data[200];
+    char data[SIZE_OF_INPUT];
     struct ListElement * next;
 
 } ListElement_type;
+
+// pthread_mutex_t accum_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static int getLine (char sign, char *text, size_t inputSize) {
+    int character;
+
+    if (sign != '\0') putchar(sign);
+
+    if (fgets(text, inputSize, stdin) == NULL)
+        return NO_INPUT;
+
+    if (text[strlen(text) - 1] != '\n') {
+        while (((getchar()) != '\n') && (character != EOF)) return TOO_LONG;
+    }
+    
+    text[strlen(text) - 1] = '\0';
+    return OK;
+}
+
+bool isLetter(char character) {
+    return ((character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z'));
+}
+
+bool checkInput(char* option, char* input) {
+    return !(strcmp(option, input));
+}
+
+char* createCommand(char readedCommand[]) {
+    char* command = (char*) malloc(sizeof(char));
+    strcpy(command, "./");
+    strcat(command, readedCommand);
+    return command;
+}
+
+void runCommand(char* command) {
+    system(createCommand(command));
+}
+
+void exitProgram() {
+    puts("exitting...");
+    exit(0);
+}
+
+void showHelp() {
+    puts("  help - show this help list\n"                              \
+         "  sum [x y z ...] - sum 2 (or more) numbers\n"               \
+         "  counter x - countdown from x to 0\n"
+         "  history - show commands history\n"                         \
+         "  exit - exit the interpreter");
+}
+
+void showHistory(ListElement_type *headOfHistoryList) {
+    if(headOfHistoryList == NULL) {
+        puts("List is empty");
+        return;
+    }
+
+    ListElement_type *current = headOfHistoryList;
+    int i = 1;
+
+    do {
+        printf("%d. %s\n", i++, current->data);
+        current = current->next;
+    } while (current != NULL);
+}
 	
-void pushBack(ListElement_type **head, char* text)
+void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 {	
-	if(*head==NULL) {
-		*head = (ListElement_type *)malloc(sizeof(ListElement_type));
-   		strcpy((*head)->data, text);
-    	(*head)->next = NULL;
+	if(*headOfHistoryList == NULL) {
+		*headOfHistoryList = (ListElement_type *) malloc(sizeof(ListElement_type));
+   		strcpy((*headOfHistoryList)->data, text);
+    	(*headOfHistoryList)->next = NULL;
 	} else {
-		ListElement_type *current=*head;
+		ListElement_type *current = *headOfHistoryList;
 	
 	    while (current->next != NULL) {
 	        current = current->next;
 	    }
 	
-	    current->next = (ListElement_type *)malloc(sizeof(ListElement_type));
+	    current->next = (ListElement_type * )malloc(sizeof(ListElement_type));
 	    strcpy(current->next->data, text);
 	    current->next->next = NULL;	
 	}
 }
-	
-void show(ListElement_type *head) {
-    int i = 1;
 
-    printf("\n");
-    if(head==NULL) {
-        printf("List is empty");
-        return;
-    }
+void readCommand(ListElement_type *headOfHistoryList, char* option, char* readed) {
+        int inputStatus = getLine('>', readed, SIZE_OF_INPUT);
 
-    ListElement_type *current=head;
+        if (inputStatus == NO_INPUT) return;
+        if (inputStatus == TOO_LONG) {
+            puts("Input is too long.");
+            return;
+        }
 
-    do {
-        printf("%d. %s\n", i, current->data);
-        current = current->next;
-        i++;
-    } while (current != NULL);
- 
+        strcpy(option, readed);
+        if (!checkInput(option, "history") && !checkInput(option, "help") && !checkInput(option, "exit")) 
+            strtok(option, " ");
+
+        if (checkInput(option, "exit")) exitProgram();
+        else if (checkInput(option, "sum")) runCommand(readed);
+        else if (checkInput(option, "counter")) runCommand(readed);
+        else if (checkInput(option, "history")) showHistory(headOfHistoryList);
+        else if (checkInput(option, "help")) showHelp();
+        else printf("%s: command not found\n", readed);
 }
 
 int main(int argc, const char* argv[]) {
-
-    ListElement_type *head;
-    head = (ListElement_type *)malloc(sizeof(ListElement_type));
-    head=NULL;
-
-    int i, sum = 0;
-    char option[200];
-    int currChar = 0;
+    char option[SIZE_OF_INPUT];
+    char readed[SIZE_OF_INPUT];
+    ListElement_type *headOfHistoryList;
+    headOfHistoryList = (ListElement_type *) malloc(sizeof(ListElement_type));
+    headOfHistoryList = NULL;
 
     if (argc > 1) {
-        printf("Unnecessary arguments have been ignored\n");
+        puts("Unnecessary arguments have been ignored");
     }
 
     while (1) {
-        char readed[200];
-        char x;
-
-        // TODO: Poprawić, cos nie tak z getc
-        // if (x = getc(stdin) == '\033' || x == '\033') { 
-        // getc
-        //     switch(x) {
-        //         case 'A':
-        //             system("history-search-backward");
-        //             break;
-        //         case 'B':
-        //             system("hitory-search-forward");
-        //             break;
-        //     } 
-        // } else { 
-
-        gets(readed);
-
-        strcpy(option, readed);
-        if (strcmp(option, "history") != 0 && strcmp(option, "help") != 0 && strcmp(option, "exit") != 0) {
-            strtok(option, " ");
-        }
-
-        if (!(strcmp(option, "exit"))) {
-            printf("%s", "exitting...\n");
-            exit(0);
-        } else if (!(strcmp(option, "sum"))) {
-            checkLastSymbol(option);
-            char command[202];  
-            strcpy(command, "./");
-            strcat(command, readed);
-
-            printf("command: %s\n", command);
-
-            system(command);
-        } else if (!(strcmp(option, ""))) {
-
-        } else if (!(strcmp(option, ""))) {
-            // TODO: Klikanie strzałki w gore daje poprzednia komende
-
-        } else if (!(strcmp(option, ""))) {
-            
-
-        } else if (!(strcmp(option, "history"))) {
-            // TODO: Wyswietlanie historii
-            
-            show(head);
-
-        } else if (!(strcmp(option, "help"))) {
-            puts("\nhelp - show this help list\n"                       \
-            "sum [x y z ...] - sum 2 (or more) numbers\n"               \
-            "history - show history of commands\n"                      \
-            "exit - exit this interpreter\n");        
-        } else {
-            printf("%s", "Choose another option");
-            break;
-        }
-
-        pushBack(&head, readed);
+        readCommand(headOfHistoryList, option, readed);
+        if (isLetter(option[0])) addHistoryElement(&headOfHistoryList, readed);
     }
     return 0;
 }
+// poprawa historii, sprawdza tylko pierwszy znak zamiast caly string
+// poprawa pustego stringa, wyswietla bledna komende (cos z fgets?)
+
+// void checkLastSymbol(char array[]) {
+//     char ch = '&';
+//     if (array[strlen(array) - 1] == c) puts("It works");
+//     else puts("Error");
+// }
