@@ -22,11 +22,11 @@ typedef struct ListElement {
 // pthread_mutex_t accum_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static int getLine (char sign, char *text, size_t textSize) {
-    int character;
+    char character;
 
     if (sign != '\0') putchar(sign);
 
-    if (fgets(text, textSize + 1, stdin) == NULL) return NO_INPUT;
+    if (strlen(fgets(text, textSize + 1, stdin)) <= 1) return NO_INPUT;
 
     if (text[strlen(text) - 1] != '\n') {
         while (((getchar()) != '\n') && (character != EOF)) return TOO_LONG;
@@ -74,6 +74,20 @@ void showHistory(ListElement_type *headOfHistoryList) {
         current = current->next;
     } while (current != NULL);
 }
+
+int historySize(ListElement_type *headOfHistoryList)
+{
+    int counter = 0;
+    if (headOfHistoryList == NULL) return counter;
+    else {
+        ListElement_type *current = headOfHistoryList;
+            do {
+            counter++;
+            current = current->next;
+            } while (current != NULL);
+    }
+    return counter;
+}
 	
 void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 {	
@@ -84,6 +98,13 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
    		strcpy((*headOfHistoryList)->data, text);
     	(*headOfHistoryList)->next = NULL;
 	} else {
+        if (historySize(*headOfHistoryList) >= 20) {
+            ListElement_type * newListHead = NULL;
+ 
+            newListHead = (*headOfHistoryList)->next;
+            free(*headOfHistoryList);
+            *headOfHistoryList = newListHead;	
+        }
 		ListElement_type *current = *headOfHistoryList;
 	
 	    while (current->next != NULL) {
@@ -97,16 +118,10 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 	}
 }
 
-void passOutput() {
-
-}
-
 void readCommand(ListElement_type **headOfHistoryList, char* option, char* readed) {
     readed = (char*) malloc(INPUT_MAX_LENGTH);
 
     int inputStatus = getLine('>', readed, INPUT_MAX_LENGTH);
-    puts(readed);
-    printf("size: %lu\n", sizeof(readed));
 
     if (inputStatus == NO_INPUT) return;
     if (inputStatus == TOO_LONG) {
@@ -137,18 +152,16 @@ int main(int argc, const char* argv[]) {
     ListElement_type *headOfHistoryList = NULL;
 
     if (argc > 1) puts("Unnecessary arguments have been ignored");
-    
+
     while (1) {
         readCommand(&headOfHistoryList, option, readed);
     }
     return 0;
 }
 
-// poprawa historii, sprawdza tylko pierwszy znak zamiast caly string
-// poprawa pustego stringa, wyswietla bledna komende (cos z fgets?)
-// historia przechowuje wiecej niz 20 polecen
-// dodanie wątkow
-// laczenie polecen
+// dodanie wątkow - wykonywanie w tle       &
+// laczenie polecen                         |
+// oddzielny program do historii            >>
 
 
 // void checkLastSymbol(char array[]) {
