@@ -49,8 +49,10 @@ bool checkInput(char* option, char* input) {
     return !(strcmp(option, input));
 }
 
-char* createCommand(char* command) {
+char* createCommand(char* readedCommand) {
+    char* command = (char*) malloc(sizeof(char));
     strcpy(command, PATH);
+    strcat(command, readedCommand);
     return command;
 }
 
