@@ -10,22 +10,22 @@
 #define OK       0
 #define NO_INPUT 1
 #define TOO_LONG 2
-#define SIZE_OF_INPUT 200
+#define PATH "./"
 
 typedef struct ListElement {
-    char data[SIZE_OF_INPUT];
+    char* data;
     struct ListElement * next;
 
 } ListElement_type;
 
 // pthread_mutex_t accum_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static int getLine (char sign, char *text) {
+static int getLine (char sign, char *text, size_t textSize) {
     int character;
 
     if (sign != '\0') putchar(sign);
 
-    if (fgets(text, SIZE_OF_INPUT, stdin) == NULL)
+    if (fgets(text, textSize + 1, stdin) == NULL)
         return NO_INPUT;
 
     if (text[strlen(text) - 1] != '\n') {
@@ -46,7 +46,7 @@ bool checkInput(char* option, char* input) {
 
 char* createCommand(char readedCommand[]) {
     char* command = (char*) malloc(sizeof(char));
-    strcpy(command, "./");
+    strcpy(command, PATH);
     strcat(command, readedCommand);
     return command;
 }
@@ -85,8 +85,10 @@ void showHistory(ListElement_type *headOfHistoryList) {
 	
 void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 {	
+
 	if(*headOfHistoryList == NULL) {
 		*headOfHistoryList = (ListElement_type *) malloc(sizeof(ListElement_type));
+        (*headOfHistoryList)->data = (char*) malloc(sizeof(text));
    		strcpy((*headOfHistoryList)->data, text);
     	(*headOfHistoryList)->next = NULL;
 	} else {
@@ -95,15 +97,17 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 	    while (current->next != NULL) {
 	        current = current->next;
 	    }
-	
+
 	    current->next = (ListElement_type * )malloc(sizeof(ListElement_type));
+        current->next->data = (char*) malloc(sizeof(text));
 	    strcpy(current->next->data, text);
 	    current->next->next = NULL;	
 	}
 }
 
-void readCommand(ListElement_type *headOfHistoryList, char* option, char* readed) {
-        int inputStatus = getLine('>', readed);
+void readCommand(ListElement_type **headOfHistoryList, char* option, char* readed) {
+        readed = (char*) malloc(sizeof(char));
+        int inputStatus = getLine('>', readed, sizeof(readed));
 
         if (inputStatus == NO_INPUT) return;
         if (inputStatus == TOO_LONG) {
@@ -111,6 +115,7 @@ void readCommand(ListElement_type *headOfHistoryList, char* option, char* readed
             return;
         }
 
+        option = (char*) malloc(sizeof(char));
         strcpy(option, readed);
         if (!checkInput(option, "history") && !checkInput(option, "help") && !checkInput(option, "exit")) 
             strtok(option, " ");
@@ -118,30 +123,36 @@ void readCommand(ListElement_type *headOfHistoryList, char* option, char* readed
         if (checkInput(option, "exit")) exitProgram();
         else if (checkInput(option, "sum")) runCommand(readed);
         else if (checkInput(option, "counter")) runCommand(readed);
-        else if (checkInput(option, "history")) showHistory(headOfHistoryList);
+        else if (checkInput(option, "history")) showHistory(*headOfHistoryList);
         else if (checkInput(option, "help")) showHelp();
         else printf("%s: command not found\n", readed);
+
+        addHistoryElement(&*headOfHistoryList, readed); 
+        free(option);
+        free(readed);
 }
 
 int main(int argc, const char* argv[]) {
-    char option[SIZE_OF_INPUT];
-    char readed[SIZE_OF_INPUT];
-    ListElement_type *headOfHistoryList;
-    headOfHistoryList = (ListElement_type *) malloc(sizeof(ListElement_type));
-    headOfHistoryList = NULL;
+    char* option;
+    char* readed;
+    ListElement_type *headOfHistoryList = NULL;
+
 
     if (argc > 1) {
         puts("Unnecessary arguments have been ignored");
     }
 
     while (1) {
-        readCommand(headOfHistoryList, option, readed);
-        if (isLetter(option[0])) addHistoryElement(&headOfHistoryList, readed);
+        readCommand(&headOfHistoryList, option, readed);
     }
     return 0;
 }
 // poprawa historii, sprawdza tylko pierwszy znak zamiast caly string
 // poprawa pustego stringa, wyswietla bledna komende (cos z fgets?)
+// historia przechowuje wiecej niz 20 polecen
+// dodanie wątkow
+// laczenie polecen
+
 
 // void checkLastSymbol(char array[]) {
 //     char ch = '&';
