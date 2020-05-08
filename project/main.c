@@ -20,12 +20,12 @@ typedef struct ListElement {
 
 // pthread_mutex_t accum_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static int getLine (char sign, char *text, size_t inputSize) {
+static int getLine (char sign, char *text) {
     int character;
 
     if (sign != '\0') putchar(sign);
 
-    if (fgets(text, inputSize, stdin) == NULL)
+    if (fgets(text, SIZE_OF_INPUT, stdin) == NULL)
         return NO_INPUT;
 
     if (text[strlen(text) - 1] != '\n') {
@@ -103,7 +103,7 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 }
 
 void readCommand(ListElement_type *headOfHistoryList, char* option, char* readed) {
-        int inputStatus = getLine('>', readed, SIZE_OF_INPUT);
+        int inputStatus = getLine('>', readed);
 
         if (inputStatus == NO_INPUT) return;
         if (inputStatus == TOO_LONG) {
