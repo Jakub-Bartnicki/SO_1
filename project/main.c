@@ -20,24 +20,24 @@ typedef struct ListElement {
 
 // pthread_mutex_t accum_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static int getLine (char sign, char *text) {
+static int getLine (char sign, char **text) {
     int character;
     size_t inputSize = 0;
 
     if (sign != '\0') putchar(sign);
 
     // if (fgets(text, textSize + 1, stdin) == NULL)
-    if (getline(&text, &inputSize, stdin) == -1) {
-        free(text);
+    if (getline(&(*text), &inputSize, stdin) == -1) {
+        free((*text));
         perror("Failed to read input");
         return NO_INPUT;
     }
 
-    if (text[strlen(text) - 1] != '\n') {
+    if ((*text)[strlen(*text) - 1] != '\n') {
         while (((getchar()) != '\n') && (character != EOF)) return TOO_LONG;
     }
     
-    text[strlen(text) - 1] = '\0';
+    (*text)[strlen(*text) - 1] = '\0';
     return OK;
 }
 
@@ -108,7 +108,9 @@ void passOutput() {
 
 void readCommand(ListElement_type **headOfHistoryList, char* option, char* readed) {
         readed = (char*) malloc(sizeof(char));
-        int inputStatus = getLine('>', readed);
+
+        int inputStatus = getLine('>', &readed);
+        puts(readed);
 
         if (inputStatus == NO_INPUT) return;
         if (inputStatus == TOO_LONG) {
