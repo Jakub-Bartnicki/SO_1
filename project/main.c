@@ -49,10 +49,8 @@ bool checkInput(char* option, char* input) {
     return !(strcmp(option, input));
 }
 
-char* createCommand(char readedCommand[]) {
-    char* command = (char*) malloc(sizeof(char));
+char* createCommand(char* command) {
     strcpy(command, PATH);
-    strcat(command, readedCommand);
     return command;
 }
 
@@ -138,10 +136,8 @@ int main(int argc, const char* argv[]) {
     char* readed;
     ListElement_type *headOfHistoryList = NULL;
 
-    if (argc > 1) {
-        puts("Unnecessary arguments have been ignored");
-    }
-
+    if (argc > 1) puts("Unnecessary arguments have been ignored");
+    
     while (1) {
         readCommand(&headOfHistoryList, option, readed);
     }
