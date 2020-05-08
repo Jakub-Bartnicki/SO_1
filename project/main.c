@@ -10,6 +10,7 @@
 #define OK       0
 #define NO_INPUT 1
 #define TOO_LONG 2
+#define INPUT_MAX_LENGTH 200
 #define PATH "./"
 
 typedef struct ListElement {
@@ -20,24 +21,18 @@ typedef struct ListElement {
 
 // pthread_mutex_t accum_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static int getLine (char sign, char **text) {
+static int getLine (char sign, char *text, size_t textSize) {
     int character;
-    size_t inputSize = 0;
 
     if (sign != '\0') putchar(sign);
 
-    // if (fgets(text, textSize + 1, stdin) == NULL)
-    if (getline(&(*text), &inputSize, stdin) == -1) {
-        free((*text));
-        perror("Failed to read input");
-        return NO_INPUT;
-    }
+    if (fgets(text, textSize + 1, stdin) == NULL) return NO_INPUT;
 
-    if ((*text)[strlen(*text) - 1] != '\n') {
+    if (text[strlen(text) - 1] != '\n') {
         while (((getchar()) != '\n') && (character != EOF)) return TOO_LONG;
     }
     
-    (*text)[strlen(*text) - 1] = '\0';
+    text[strlen(text) - 1] = '\0';
     return OK;
 }
 
@@ -50,7 +45,7 @@ bool checkInput(char* option, char* input) {
 }
 
 char* createCommand(char* readedCommand) {
-    char* command = (char*) malloc(sizeof(char));
+    char* command = (char*) malloc(INPUT_MAX_LENGTH);
     strcpy(command, PATH);
     strcat(command, readedCommand);
     return command;
@@ -85,7 +80,7 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 
 	if(*headOfHistoryList == NULL) {
 		*headOfHistoryList = (ListElement_type *) malloc(sizeof(ListElement_type));
-        (*headOfHistoryList)->data = (char*) malloc(sizeof(text));
+        (*headOfHistoryList)->data = (char*) malloc(INPUT_MAX_LENGTH);
    		strcpy((*headOfHistoryList)->data, text);
     	(*headOfHistoryList)->next = NULL;
 	} else {
@@ -96,7 +91,7 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 	    }
 
 	    current->next = (ListElement_type * )malloc(sizeof(ListElement_type));
-        current->next->data = (char*) malloc(sizeof(text));
+        current->next->data = (char*) malloc(INPUT_MAX_LENGTH);
 	    strcpy(current->next->data, text);
 	    current->next->next = NULL;	
 	}
@@ -107,32 +102,33 @@ void passOutput() {
 }
 
 void readCommand(ListElement_type **headOfHistoryList, char* option, char* readed) {
-        readed = (char*) malloc(sizeof(char));
+    readed = (char*) malloc(INPUT_MAX_LENGTH);
 
-        int inputStatus = getLine('>', &readed);
-        puts(readed);
+    int inputStatus = getLine('>', readed, INPUT_MAX_LENGTH);
+    puts(readed);
+    printf("size: %lu\n", sizeof(readed));
 
-        if (inputStatus == NO_INPUT) return;
-        if (inputStatus == TOO_LONG) {
-            puts("Input is too long.");
-            return;
-        }
+    if (inputStatus == NO_INPUT) return;
+    if (inputStatus == TOO_LONG) {
+        puts("Input is too long.");
+        return;
+    }
 
-        option = (char*) malloc(sizeof(char));
-        strcpy(option, readed);
-        if (!checkInput(option, "history") && !checkInput(option, "help") && !checkInput(option, "exit")) 
-            strtok(option, " ");
+    option = (char*) malloc(INPUT_MAX_LENGTH);
+    strcpy(option, readed);
+    if (!checkInput(option, "history") && !checkInput(option, "help") && !checkInput(option, "exit")) 
+        strtok(option, " ");
 
-        if (checkInput(option, "exit")) exitProgram();
-        else if (checkInput(option, "sum")) runCommand(readed);
-        else if (checkInput(option, "counter")) runCommand(readed);
-        else if (checkInput(option, "history")) showHistory(*headOfHistoryList);
-        else if (checkInput(option, "help")) runCommand(readed);
-        else printf("%s: command not found\n", readed);
+    if (checkInput(option, "exit")) exitProgram();
+    else if (checkInput(option, "sum")) runCommand(readed);
+    else if (checkInput(option, "counter")) runCommand(readed);
+    else if (checkInput(option, "history")) showHistory(*headOfHistoryList);
+    else if (checkInput(option, "help")) runCommand(readed);
+    else printf("%s: command not found\n", readed);
 
-        addHistoryElement(&*headOfHistoryList, readed); 
-        free(option);
-        free(readed);
+    addHistoryElement(&*headOfHistoryList, readed); 
+    free(option);
+    free(readed);
 }
 
 int main(int argc, const char* argv[]) {
