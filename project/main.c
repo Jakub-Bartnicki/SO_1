@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <stdbool.h> 
 #include <signal.h>
-#include "history.h"
+#include "src/history.h"
 
 #define OK       0
 #define NO_INPUT 1
