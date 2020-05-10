@@ -14,12 +14,11 @@ int main(int argc, const char* argv[]) {
 
     for (i = 1; i < argc; i++) {
         typeof(argv[i]) type = argv[i];
-        printf("%s\n", type);
-
+        
         sum += atoi(argv[i]);
     }
 
-    printf("Output: %d\n", sum);
+    printf("%d\n", sum);
     
     return 0;
 }
