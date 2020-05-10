@@ -3,13 +3,14 @@
 
 #define typename(x) _Generic((x), int: "int")
 
+// Polecenie wypisujące sumę podanych argumentów (argv[>1])
 int main(int argc, const char* argv[]) {
     
     int i, sum = 0;
     char* type;
 
     if (argc == 1) {
-        printf("%s", "Please provide the command line arguments\n");
+        perror("Please provide the command line arguments");
     }
 
     for (i = 1; i < argc; i++) {

@@ -2,11 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 
-
-
+// Polecenie "rysujące" prostokąt o podanych wymiarach (wysokość: argv[1], szerokość: argv[2])
 int main(int argc, const char* argv[]) {
     if (argc != 3) {
-    	puts("Please add 2 command line arguments");
+    	perror("Please add 2 command line arguments");
     	return 0;
 	}
 

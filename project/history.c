@@ -5,8 +5,9 @@
 #include "history.h"
 
 #define INPUT_MAX_LENGTH 200
-#define PATH "/Users/jakub_bartnicki/Documents/studies/Semestr_IV/SO/project/history.txt"
+#define PATH "/home/history.txt"
 
+// funkcja wyświetlająca historię na standardowym wyjściu
 void showHistory() {
     FILE *historyFile = fopen(PATH, "r");
     if (historyFile == NULL) {
@@ -24,6 +25,7 @@ void showHistory() {
     fclose(historyFile);
 }
 
+// funkcja zwracająca liczbę elementów podanej w argumentach listy jednokierunkowej
 int getHistorySize(ListElement_type *headOfHistoryList)
 {
     int counter = 0;
@@ -38,6 +40,7 @@ int getHistorySize(ListElement_type *headOfHistoryList)
     return counter;
 }
 
+// funkcja wpisująca do pliku z historią aktualną historię, jednocześnie usuwa starą
 void updateHistory(ListElement_type *headOfHistoryList) {
     FILE *historyFile = fopen(PATH, "w");
     ListElement_type *current;
@@ -55,6 +58,7 @@ void updateHistory(ListElement_type *headOfHistoryList) {
     fclose(historyFile);
 }
 
+// funkcja dodająca element do listy podanej jednokierunkowej 
 void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 {	
 	if((*headOfHistoryList) == NULL) {
@@ -67,7 +71,6 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
             ListElement_type * newListHead = NULL;
  
             newListHead = (*headOfHistoryList)->next;
-            free((*headOfHistoryList));
             (*headOfHistoryList) = newListHead;	
         }
 		ListElement_type *current = (*headOfHistoryList);
@@ -77,9 +80,9 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 	    }
 
 	    current->next = (ListElement_type * )malloc(sizeof(ListElement_type));
-        current->next->data = (char*) malloc(INPUT_MAX_LENGTH);
+        current->next->data = (char*) malloc(sizeof(char) * INPUT_MAX_LENGTH);
 	    strcpy(current->next->data, text);
-	    current->next->next = NULL;	    
+	    current->next->next = NULL;
 	}
     updateHistory(*headOfHistoryList);
 }
