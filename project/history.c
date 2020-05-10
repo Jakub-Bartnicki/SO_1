@@ -5,17 +5,16 @@
 #include "history.h"
 
 #define INPUT_MAX_LENGTH 200
-#define CHUNK 1024
+#define PATH "/Users/jakub_bartnicki/Documents/studies/Semestr_IV/SO/project/history.txt"
 
 void showHistory() {
-    FILE *historyFile = fopen("history.txt", "r");
+    FILE *historyFile = fopen(PATH, "r");
     if (historyFile == NULL) {
         perror("Unable to open file");
         return;
     }
 
     int character;
-
     while( (character = fgetc(historyFile)) != EOF && character != '\0')
 	{
 		putchar(character);
@@ -24,8 +23,6 @@ void showHistory() {
 
     fclose(historyFile);
 }
-
-
 
 int getHistorySize(ListElement_type *headOfHistoryList)
 {
@@ -42,15 +39,15 @@ int getHistorySize(ListElement_type *headOfHistoryList)
 }
 
 void updateHistory(ListElement_type *headOfHistoryList) {
-    FILE *historyFile = fopen("history.txt", "w");
+    FILE *historyFile = fopen(PATH, "w");
     ListElement_type *current;
     if (headOfHistoryList != NULL)
          current = headOfHistoryList;
     else return;
+    
     int i = 1;
-
     while (current->next != NULL) {
-        fprintf(historyFile, "\n%d. %s", i, current->data);
+        fprintf(historyFile, "%d. %s\n", i, current->data);
         current = current->next;
         i++;
     }
@@ -60,20 +57,20 @@ void updateHistory(ListElement_type *headOfHistoryList) {
 
 void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 {	
-	if(*headOfHistoryList == NULL) {
-		*headOfHistoryList = (ListElement_type *) malloc(sizeof(ListElement_type));
+	if((*headOfHistoryList) == NULL) {
+		(*headOfHistoryList) = (ListElement_type *) malloc(sizeof(ListElement_type));
         (*headOfHistoryList)->data = (char*) malloc(sizeof(char) * INPUT_MAX_LENGTH);
    		strcpy((*headOfHistoryList)->data, text);
     	(*headOfHistoryList)->next = NULL;
 	} else {
-        if (getHistorySize(*headOfHistoryList) >= 20) {
+        if (getHistorySize((*headOfHistoryList)) >= 21) {
             ListElement_type * newListHead = NULL;
  
             newListHead = (*headOfHistoryList)->next;
-            free(*headOfHistoryList);
-            *headOfHistoryList = newListHead;	
+            free((*headOfHistoryList));
+            (*headOfHistoryList) = newListHead;	
         }
-		ListElement_type *current = *headOfHistoryList;
+		ListElement_type *current = (*headOfHistoryList);
 	
 	    while (current->next != NULL) {
 	        current = current->next;
@@ -84,67 +81,6 @@ void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
 	    strcpy(current->next->data, text);
 	    current->next->next = NULL;	    
 	}
-    // TODO: NIE WPISUJE KURWA OSTATNIEGO ELEMENTU HISTORII
     updateHistory(*headOfHistoryList);
 }
 
-// void showHistory(ListElement_type *headOfHistoryList) {
-//     if(headOfHistoryList == NULL) {
-//         puts("List is empty");
-//         return;
-//     }
-
-//     ListElement_type *current = headOfHistoryList;
-//     int i = 1;
-
-//     do {
-//         printf("%d. %s\n", i++, current->data);
-//         current = current->next;
-//     } while (current != NULL);
-// }
-
-// int getHistorySize()
-// {
-//     FILE *history = fopen("history.txt", "r");
-//     int counter = 0;
-    
-//     while(!feof(history))
-//     {
-//         if(fgetc(history) == '\n')
-//         {
-//             counter++;
-//         }
-//     }
-
-//     fclose(history);
-
-//     return counter;
-// }
-
-// void addHistoryElement(ListElement_type **headOfHistoryList, char* text)
-// {	
-// 	if(*headOfHistoryList == NULL) {
-// 		*headOfHistoryList = (ListElement_type *) malloc(sizeof(ListElement_type));
-//         (*headOfHistoryList)->data = (char*) malloc(sizeof(char) * INPUT_MAX_LENGTH);
-//    		strcpy((*headOfHistoryList)->data, text);
-//     	(*headOfHistoryList)->next = NULL;
-// 	} else {
-//         if (getHistorySize(*headOfHistoryList) >= 20) {
-//             ListElement_type * newListHead = NULL;
- 
-//             newListHead = (*headOfHistoryList)->next;
-//             free(*headOfHistoryList);
-//             *headOfHistoryList = newListHead;	
-//         }
-// 		ListElement_type *current = *headOfHistoryList;
-	
-// 	    while (current->next != NULL) {
-// 	        current = current->next;
-// 	    }
-
-// 	    current->next = (ListElement_type * )malloc(sizeof(ListElement_type));
-//         current->next->data = (char*) malloc(INPUT_MAX_LENGTH);
-// 	    strcpy(current->next->data, text);
-// 	    current->next->next = NULL;	
-// 	}
-// }

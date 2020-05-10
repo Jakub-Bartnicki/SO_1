@@ -8,9 +8,7 @@ typedef struct ListElement {
 } ListElement_type;
 
 void showHistory();
-// void showHistory(ListElement_type *headOfHistoryList);
 
-// void addHistoryElement(char* text);
 void addHistoryElement(ListElement_type **headOfHistoryList, char* text);
 
 #endif
