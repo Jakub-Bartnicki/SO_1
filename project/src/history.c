@@ -5,7 +5,7 @@
 #include "history.h"
 
 #define INPUT_MAX_LENGTH 200
-#define PATH "/home/history.txt"
+#define PATH "history.txt"
 
 // funkcja wyświetlająca historię na standardowym wyjściu
 void showHistory() {
