@@ -18,6 +18,7 @@ void *moveBtoA(void *carNr);
 void *queueA(void *carNr);
 void *queueB(void *carNr);
 
+// auto o numerze carNr jadąc z miasta A jest na moście, zmienia się ilość aut w mieście B i przy moście od strony miasta A
 void *moveAtoB(void *carNr) {
     pthread_mutex_lock(&bridge);
     pthread_cond_signal(&move);
@@ -35,6 +36,7 @@ void *moveAtoB(void *carNr) {
     return 0;
 }
     
+// auto o numerze carNr jadąc z miasta B jest na moście, zmienia się ilość aut w mieście A i przy moście od strony miasta B
 void *moveBtoA(void *carNr) {
     pthread_mutex_lock(&bridge);
     pthread_cond_signal(&move);
@@ -47,21 +49,26 @@ void *moveBtoA(void *carNr) {
     sleep(1);
     pthread_mutex_unlock(&bridge);
     sleep(1);
+
     queueA(carNr);
     return 0;
 }
     
+// auto przechodzi z miasta A do kolejki przy moście
 void *queueA(void *carNr) {
     pthread_mutex_lock(&mutex_A);
     sleep(1);
+
     cityA--;
     bridgeA++;
-    printf("A - %d %d>>> [<<-<<] <<<%d %d - B\n", cityA, bridgeA, bridgeB, cityB);
+    printf("A - %d %d>>> [>>->>] <<<%d %d - B\n", cityA, bridgeA, bridgeB, cityB);
+    
     pthread_mutex_unlock(&mutex_A);
     moveAtoB(carNr);
     return 0;
 }
     
+// auto przechodzi z miasta B do kolejki przy moście
 void *queueB(void *carNr) {
     while(1) {
         pthread_mutex_lock(&mutex_B);
@@ -77,6 +84,7 @@ void *queueB(void *carNr) {
     return 0;
 }
     
+// inicjowanie zmiennych pomocniczych oraz głównych wątków i losowanie aut, które aktualnie mają przejeżdżać przez most
 int main(int argc, char *argv[]) {
     int carsAmount = 0;
     
